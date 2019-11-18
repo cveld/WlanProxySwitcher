@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace WlanProxySwitcher
 {
@@ -35,8 +36,17 @@ namespace WlanProxySwitcher
             {
                 for (int i = 0; i < oldInterfaces.Length; i++)
                 {
-                    if (oldInterfaces[i].Name != newInterfaces[i].Name || oldInterfaces[i].IsConnected != newInterfaces[i].IsConnected)
+                    try
                     {
+                        if (oldInterfaces[i].Name != newInterfaces[i].Name || oldInterfaces[i].IsConnected != newInterfaces[i].IsConnected)
+                        {
+                            hasChanges = true;
+                            break;
+                        }
+                    }
+                    catch (COMException e)
+                    {
+                        Console.WriteLine(e.Message);
                         hasChanges = true;
                         break;
                     }
