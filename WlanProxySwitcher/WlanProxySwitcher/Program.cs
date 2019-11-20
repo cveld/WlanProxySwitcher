@@ -69,12 +69,16 @@ namespace WlanProxySwitcher
             {
                 Console.WriteLine($"Found wlan-proxy entry: {foundWlanProxyConfigModel.Wlan} with proxy setting {foundWlanProxyConfigModel.Proxy}. Activating http proxy");
                 SetProxy(proxyEnabled: true, proxyHost: foundWlanProxyConfigModel.Proxy);
+                return;
             }
-            else
+            
+            if (connected)
             {
                 Console.WriteLine("Connected, but no corresponding wlan-proxy entry found. Disabling http proxy");
                 SetProxy(proxyEnabled: false, proxyHost: String.Empty);
-            }            
+            }
+                        
+            // not connected, do nothing
         }
 
         private static void SetProxy(bool proxyEnabled, string proxyHost)
