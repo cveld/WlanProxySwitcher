@@ -78,14 +78,12 @@ namespace WlanProxySwitcher
         }
 
         private static void SetProxy(bool proxyEnabled, string proxyHost)
-        {
-            // var proxyhost = "http=" + proxyhost + ":" + port.ToString();
-            var proxyhost = "10.122.74.1:3128";
+        {                        
             const string userRoot = "HKEY_CURRENT_USER";
             const string subkey = @"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
             const string keyName = userRoot + "\\" + subkey;
 
-            Registry.SetValue(keyName, "ProxyServer", proxyhost);
+            Registry.SetValue(keyName, "ProxyServer", proxyHost);
             Registry.SetValue(keyName, "ProxyEnable", proxyEnabled ? 1 : 0);
 
             Console.WriteLine($"Proxy {(proxyEnabled ? "enabled" : "disabled")}");
