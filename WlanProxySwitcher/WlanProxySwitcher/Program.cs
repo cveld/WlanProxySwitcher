@@ -38,6 +38,7 @@ namespace WlanProxySwitcher
             var networks = GetNetworks();
             Network foundnetwork = null;
             WlanProxyConfigModel foundWlanProxyConfigModel = null;
+            bool connected = false;
 
             foreach (var network in networks)
             {
@@ -46,6 +47,7 @@ namespace WlanProxySwitcher
                 {
                     continue;
                 }
+                connected = true;
                 // If yes, find it in de config:
                 var result = WlanProxyConfigs.Where(w => w.Wlan == network.Name).FirstOrDefault();
                 if (result != null)
@@ -66,16 +68,16 @@ namespace WlanProxySwitcher
             if (foundnetwork != null)
             {
                 Console.WriteLine($"Found wlan-proxy entry: {foundWlanProxyConfigModel.Wlan} with proxy setting {foundWlanProxyConfigModel.Proxy}. Activating http proxy");
+                SetProxy(proxyEnabled: true, proxyHost: foundWlanProxyConfigModel.Proxy);
             }
             else
             {
-                Console.WriteLine("No corresponding wlan-proxy entry found. Disabling http proxy");
-            }
-
-            SetProxy(proxyEnabled: foundnetwork != null);
+                Console.WriteLine("Connected, but no corresponding wlan-proxy entry found. Disabling http proxy");
+                SetProxy(proxyEnabled: false, proxyHost: String.Empty);
+            }            
         }
 
-        private static void SetProxy(bool proxyEnabled)
+        private static void SetProxy(bool proxyEnabled, string proxyHost)
         {
             // var proxyhost = "http=" + proxyhost + ":" + port.ToString();
             var proxyhost = "10.122.74.1:3128";
