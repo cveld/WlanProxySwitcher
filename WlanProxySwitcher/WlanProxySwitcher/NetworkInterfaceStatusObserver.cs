@@ -22,7 +22,6 @@ namespace WlanProxySwitcher
 
         private void UpdateNetworkStatus(object o)
         {
-            Console.WriteLine("Heartbeat");
             var newInterfaces = NetworkInterface.GetAllNetworkInterfaces();
             bool hasChanges = false;
             if (newInterfaces.Length != oldInterfaces.Length)
