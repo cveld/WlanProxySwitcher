@@ -87,8 +87,11 @@ namespace WlanProxySwitcher
             const string subkey = @"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
             const string keyName = userRoot + "\\" + subkey;
 
-            Registry.SetValue(keyName, "ProxyServer", proxyHost);
-            Registry.SetValue(keyName, "ProxyEnable", proxyEnabled ? 1 : 0);
+            if (proxyEnabled)
+            {
+                Registry.SetValue(keyName, "ProxyServer", proxyHost);
+            }
+            Registry.SetValue(keyName, "ProxyEnable", proxyEnabled ? 1 : 0);            
 
             Console.WriteLine($"Proxy {(proxyEnabled ? "enabled" : "disabled")}");
         }
