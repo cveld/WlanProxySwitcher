@@ -14,42 +14,54 @@ namespace WlanProxySwitcher
     {
         public event EventHandler<EventArgs> NetworkChanged;
 
-        private Network[] oldInterfaces;
+        private NetworkStatusModel[] oldInterfaces;
         private Timer timer;
 
         public void Start()
         {
             timer = new Timer(UpdateNetworkStatus, null, new TimeSpan(0, 0, 0, 0, 500), new TimeSpan(0, 0, 0, 0, 500));
 
-            oldInterfaces = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected).ToArray();
+            oldInterfaces = GetConnectedNetworks().ToArray();
+        }
+
+        private IEnumerable<NetworkStatusModel> GetConnectedNetworks()
+        {
+            var result = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected).Select(c => {
+                bool? IsConnected = null;
+                try {
+                    IsConnected = c.IsConnected;
+                }
+                catch (COMException e)
+                {
+                    Console.WriteLine(e.Message);                    
+                }
+                return new NetworkStatusModel
+                {
+                    Name = c.Name,
+                    IsConnected = IsConnected
+                };
+            });
+            return result;
         }
 
         private void UpdateNetworkStatus(object o)
         {
-            var newInterfaces = NetworkListManager.GetNetworks(NetworkConnectivityLevels.Connected).ToArray();
+            var newInterfaces = GetConnectedNetworks().ToArray();
             bool hasChanges = false;
-            if (newInterfaces.Count() != oldInterfaces.Length)
+            if (newInterfaces.Length != oldInterfaces.Length)
             {
                 hasChanges = true;
             }
             if (!hasChanges)
             {
-                for (int i = 0; i < oldInterfaces.Length; i++)
-                {
-                    try
+                for (var i = 0; i < oldInterfaces.Length; i++)
+                {                    
+                    if (oldInterfaces[i].Name != newInterfaces[i].Name || oldInterfaces[i].IsConnected != newInterfaces[i].IsConnected)
                     {
-                        if (oldInterfaces[i].Name != newInterfaces[i].Name || oldInterfaces[i].IsConnected != newInterfaces[i].IsConnected)
-                        {
-                            hasChanges = true;
-                            break;
-                        }
-                    }
-                    catch (COMException e)
-                    {
-                        Console.WriteLine(e.Message);
                         hasChanges = true;
                         break;
                     }
+                    
                 }
             }
 
@@ -57,6 +69,7 @@ namespace WlanProxySwitcher
 
             if (hasChanges)
             {
+                Console.WriteLine("HasChanges");
                 RaiseNetworkChanged();
             }
         }

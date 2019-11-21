@@ -16,13 +16,13 @@ namespace WlanProxySwitcher
 
         public void Start()
         {
-            timer = new Timer(UpdateNetworkStatus, null, new TimeSpan(0, 0, 0, 0, 500), new TimeSpan(0, 0, 0, 0, 500));
-
+            timer = new Timer(UpdateNetworkStatus, null, new TimeSpan(0, 0, 0, 0, 500), new TimeSpan(0, 0, 0, 0, 500));            
             oldInterfaces = NetworkInterface.GetAllNetworkInterfaces();
         }
 
         private void UpdateNetworkStatus(object o)
         {
+            Console.WriteLine("Heartbeat");
             var newInterfaces = NetworkInterface.GetAllNetworkInterfaces();
             bool hasChanges = false;
             if (newInterfaces.Length != oldInterfaces.Length)
